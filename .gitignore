@@ -32,7 +32,9 @@ KeepCount.xcodeproj/
 openspec/changes/
 
 # Gemini CLI / IDE
-.gemini/
+.gemini/*
+!.gemini/skills/
+!.gemini/commands/
 .idea/
 .DS_Store
 
