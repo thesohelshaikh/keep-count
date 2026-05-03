@@ -9,6 +9,7 @@ struct keep_countApp: App {
             Counter.self,
             Category.self,
             HistoryEvent.self,
+            DateEvent.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 

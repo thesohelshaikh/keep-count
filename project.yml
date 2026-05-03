@@ -7,7 +7,8 @@ targets:
     platform: iOS
     deploymentTarget: "17.0"
     sources:
-      - KeepCount
+      - KeepCount/App
+      - KeepCount/UI
     settings:
       base:
         GENERATE_INFOPLIST_FILE: YES

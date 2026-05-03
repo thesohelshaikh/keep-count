@@ -11,6 +11,11 @@ struct MainTabView: View {
                     Label("Counters", systemImage: "list.bullet")
                 }
 
+            DateTrackingView()
+                .tabItem {
+                    Label("Events", systemImage: "calendar")
+                }
+            
             SettingsView()
                 .tabItem {
                     Label("Settings", systemImage: "gear")
