@@ -26,6 +26,7 @@ struct HistoryDetailView: View {
                     if let goal = counter.goal {
                         LabeledContent("Goal", value: "\(goal)")
                     }
+                    LabeledContent("Created on", value: counter.createdAt.formatted(date: .long, time: .omitted))
                 }
 
                 Section(header: Text("History")) {

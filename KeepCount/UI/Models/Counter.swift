@@ -7,15 +7,17 @@ final class Counter {
     var id: UUID
     var name: String
     var value: Int
-    var initialValue: Int // Added to store the starting value for reset
+    var initialValue: Int = 0 // Added to store the starting value for reset
     var step: Int
     var goal: Int?
     var color: String // Storing color as a hex string
     var habitType: String // "positive" or "negative"
     var category: Category?
+    var isArchived: Bool = false
+    var createdAt: Date = Date()
     @Relationship(deleteRule: .cascade, inverse: \HistoryEvent.counter) var history: [HistoryEvent] = []
 
-    init(id: UUID = UUID(), name: String, value: Int = 0, initialValue: Int = 0, step: Int = 1, goal: Int? = nil, color: String = "000000", habitType: String = "positive", category: Category? = nil) {
+    init(id: UUID = UUID(), name: String, value: Int = 0, initialValue: Int = 0, step: Int = 1, goal: Int? = nil, color: String = "000000", habitType: String = "positive", category: Category? = nil, isArchived: Bool = false, createdAt: Date = Date()) {
         self.id = id
         self.name = name
         self.value = value
@@ -25,6 +27,8 @@ final class Counter {
         self.color = color
         self.habitType = habitType
         self.category = category
+        self.isArchived = isArchived
+        self.createdAt = createdAt
     }
 
     // Method to reset the counter to its initial value

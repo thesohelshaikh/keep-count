@@ -3,6 +3,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @AppStorage("isDarkMode") private var isDarkMode = false
+    @State private var showingArchivedItems = false
 
     var body: some View {
         NavigationStack {
@@ -12,6 +13,12 @@ struct SettingsView: View {
                         CategoryListView()
                     } label: {
                         Label("Manage Categories", systemImage: "folder.fill")
+                    }
+                    
+                    Button {
+                        showingArchivedItems = true
+                    } label: {
+                        Label("Manage Archived Items", systemImage: "archivebox.fill")
                     }
                 }
                 
@@ -31,6 +38,9 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle("Settings")
+            .sheet(isPresented: $showingArchivedItems) {
+                ArchivedItemsView()
+            }
         }
     }
 }

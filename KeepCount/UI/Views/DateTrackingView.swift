@@ -4,7 +4,7 @@ import SwiftData
 struct DateTrackingView: View {
     @Environment(\.modelContext) private var modelContext
     
-    @Query(sort: \DateEvent.date, order: .reverse) private var dateEvents: [DateEvent]
+    @Query(filter: #Predicate<DateEvent> { $0.isArchived == false }, sort: \DateEvent.date, order: .reverse) private var dateEvents: [DateEvent]
     
     @State private var showingAddDateEventView = false
     @State private var showingEditDateEventView = false
@@ -83,6 +83,14 @@ struct DateTrackingView: View {
                 Label("Edit", systemImage: "pencil")
             }
             .tint(.blue)
+        }
+        .swipeActions(edge: .trailing) {
+            Button {
+                event.isArchived = true
+            } label: {
+                Label("Archive", systemImage: "archivebox")
+            }
+            .tint(.orange)
         }
     }
 

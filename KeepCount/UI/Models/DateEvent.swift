@@ -6,11 +6,13 @@ final class DateEvent {
     var id: UUID
     var name: String
     var date: Date
+    var isArchived: Bool = false
 
-    init(name: String, date: Date) {
+    init(name: String, date: Date, isArchived: Bool = false) {
         self.id = UUID()
         self.name = name
         self.date = date
+        self.isArchived = isArchived
     }
 
     var formattedTimeDifference: String {

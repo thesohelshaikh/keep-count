@@ -6,7 +6,7 @@ import UIKit // Import UIKit for haptic feedback
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: [SortDescriptor(\Category.order, order: .forward), SortDescriptor(\Category.name, order: .forward)]) private var categories: [Category]
-    @Query private var allCounters: [Counter]
+    @Query(filter: #Predicate<Counter> { $0.isArchived == false }) private var allCounters: [Counter]
     
     @State private var showingAddCounter = false
     @State private var counterToEdit: Counter? // State for editing counter
@@ -129,6 +129,13 @@ struct ContentView: View {
             .tint(.blue)
         }
         .swipeActions(edge: .trailing) {
+            Button {
+                counter.isArchived = true
+            } label: {
+                Label("Archive", systemImage: "archivebox")
+            }
+            .tint(.orange)
+
             Button(role: .destructive) {
                 counterToDelete = counter
                 showingCounterDeleteConfirmation = true
