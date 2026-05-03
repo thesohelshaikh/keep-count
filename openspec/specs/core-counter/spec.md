@@ -11,11 +11,15 @@ The system SHALL maintain a Counter model with name, value, initial value, step,
 - **THEN** it SHALL be initialized with the provided values or defaults
 
 ### Requirement: Category Model
-The system SHALL maintain a Category model that can contain multiple counters.
+The system SHALL maintain a Category model that can contain multiple counters and has a user-definable order.
 
 #### Scenario: Category Creation
 - **WHEN** a user creates a new category
-- **THEN** it SHALL be able to hold a list of counters
+- **THEN** it SHALL be able to hold a list of counters.
+
+#### Scenario: Category Display Order
+- **WHEN** categories are displayed to the user
+- **THEN** they SHALL be displayed in the user-defined order.
 
 ### Requirement: Increment and Decrement
 The system SHALL allow users to increment and decrement counter values by a specified step.

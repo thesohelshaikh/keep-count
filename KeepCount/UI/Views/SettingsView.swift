@@ -7,6 +7,14 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
+                Section(header: Text("Data Management")) {
+                    NavigationLink {
+                        CategoryListView()
+                    } label: {
+                        Label("Manage Categories", systemImage: "folder.fill")
+                    }
+                }
+                
                 Section(header: Text("Appearance")) {
                     Toggle(isOn: $isDarkMode) {
                         Label("Dark Mode", systemImage: "moon.fill")

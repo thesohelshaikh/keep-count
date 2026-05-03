@@ -5,7 +5,7 @@ import UIKit // Import UIKit for haptic feedback
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var categories: [Category]
+    @Query(sort: [SortDescriptor(\Category.order, order: .forward), SortDescriptor(\Category.name, order: .forward)]) private var categories: [Category]
     @Query private var allCounters: [Counter]
     
     @State private var showingAddCounter = false
@@ -38,10 +38,23 @@ struct ContentView: View {
                         // Grouped counters by category
                         let grouped = Dictionary(grouping: filteredCounters, by: { $0.category })
                         
-                        // Categories from the grouping (sorted by name)
-                        let sortedCategories = categories.sorted(by: { $0.name < $1.name })
-                        
-                        ForEach(sortedCategories) { category in
+                        // Uncategorized counters (General) first
+                        if let uncategorized = grouped[nil], !uncategorized.isEmpty {
+                            Section(header: Text("General")) {
+                                ForEach(uncategorized) { counter in
+                                    counterRowView(for: counter)
+                                }
+                                .onDelete { indices in
+                                    if let index = indices.first {
+                                        counterToDelete = uncategorized[index]
+                                        showingCounterDeleteConfirmation = true
+                                    }
+                                }
+                            }
+                        }
+
+                        // Categories from the query (already sorted by order)
+                        ForEach(categories) { category in
                             if let countersInCategory = grouped[category], !countersInCategory.isEmpty {
                                 Section(header: Text(category.name)) {
                                     ForEach(countersInCategory) { counter in
@@ -52,21 +65,6 @@ struct ContentView: View {
                                             counterToDelete = countersInCategory[index]
                                             showingCounterDeleteConfirmation = true
                                         }
-                                    }
-                                }
-                            }
-                        }
-                        
-                        // Uncategorized counters
-                        if let uncategorized = grouped[nil], !uncategorized.isEmpty {
-                            Section(header: Text("General")) {
-                                ForEach(uncategorized) { counter in
-                                    counterRowView(for: counter)
-                                }
-                                .onDelete { indices in
-                                    if let index = indices.first {
-                                        counterToDelete = uncategorized[index]
-                                        showingCounterDeleteConfirmation = true
                                     }
                                 }
                             }
