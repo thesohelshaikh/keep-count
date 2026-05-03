@@ -1,6 +1,14 @@
 # KeepCount
 
+Vibe coded with Gemini
+
 KeepCount is a modern, privacy-focused iOS application designed to track occurrences, habits, and progress. Inspired by [BetterCounter](https://github.com/albertvaka/bettercounter), it emphasizes not just the count, but the chronological history of every event.
+
+## Screenshots
+
+| Counters | Events | Settings |
+| :---: | :---: | :---: |
+| ![Counters](metadata/screenshots/counters.png) | ![Events](metadata/screenshots/events.png) | ![Settings](metadata/screenshots/settings.png) |
 
 ## Features
 
@@ -20,6 +28,7 @@ The project follows modern iOS development standards:
 - **Persistence**: SwiftData
 - **Project Management**: [XcodeGen](https://github.com/yonaskolb/XcodeGen) (configured via `project.yml`)
 - **Specification**: [OpenSpec](https://github.com/Fission-AI/OpenSpec) (located in `openspec/`)
+- **AI Context**: [GEMINI.md](GEMINI.md) (instructions for AI development)
 
 ## Getting Started
 
