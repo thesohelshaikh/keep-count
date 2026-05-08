@@ -22,7 +22,6 @@ struct HistoryDetailView: View {
             List {
                 Section(header: Text("Details")) {
                     LabeledContent("Total Value", value: "\(counter.value)")
-                    LabeledContent("Habit Type", value: counter.habitType.capitalized)
                     if let goal = counter.goal {
                         LabeledContent("Goal", value: "\(goal)")
                     }

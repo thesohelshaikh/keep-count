@@ -16,7 +16,6 @@ struct AddCounterView: View {
     @State private var step: Int
     @State private var goal: Int?
     @State private var color: Color
-    @State private var habitType: String
     @State private var selectedCategory: Category?
     @State private var newCategoryName: String = ""
     @State private var isCreatingNewCategory: Bool = false
@@ -28,7 +27,6 @@ struct AddCounterView: View {
         self._step = State(initialValue: 1)
         self._goal = State(initialValue: nil)
         self._color = State(initialValue: .blue)
-        self._habitType = State(initialValue: "positive")
         self._selectedCategory = State(initialValue: nil)
         self._newCategoryName = State(initialValue: "")
         self._isCreatingNewCategory = State(initialValue: false)
@@ -42,7 +40,6 @@ struct AddCounterView: View {
         self._step = State(initialValue: counterToEdit.step)
         // Convert hex color string to Color (relies on Color extension in ContentView.swift)
         self._color = State(initialValue: Color(hex: counterToEdit.color))
-        self._habitType = State(initialValue: counterToEdit.habitType)
         self._goal = State(initialValue: counterToEdit.goal)
         // Set selected category. Need to fetch categories first.
         // For now, assume selectedCategory will be handled after categories are fetched.
@@ -62,14 +59,6 @@ struct AddCounterView: View {
                     TextField("Goal (Optional)", value: $goal, format: .number)
                         .keyboardType(.numberPad)
                     ColorPicker("Color", selection: $color)
-                }
-
-                Section(header: Text("Habit Type")) {
-                    Picker("Habit Type", selection: $habitType) {
-                        Text("Positive").tag("positive")
-                        Text("Negative").tag("negative")
-                    }
-                    .pickerStyle(SegmentedPickerStyle())
                 }
 
                 Section(header: Text("Category")) {
@@ -136,7 +125,6 @@ struct AddCounterView: View {
             counter.step = step
             counter.goal = goal
             counter.color = color.toHex() ?? "000000" // Relies on Color extension being accessible
-            counter.habitType = habitType
             
             // Update relationships on both sides
             if counter.category != finalCategory {
@@ -153,7 +141,6 @@ struct AddCounterView: View {
                 step: step,
                 goal: goal,
                 color: color.toHex() ?? "000000", // Relies on Color extension being accessible
-                habitType: habitType,
                 category: finalCategory
             )
             modelContext.insert(newCounter)

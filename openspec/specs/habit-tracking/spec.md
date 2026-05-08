@@ -1,19 +1,15 @@
 # habit-tracking Specification
 
 ## Purpose
-TBD - created by archiving change initial-app-spec. Update Purpose after archive.
-## Requirements
-### Requirement: Habit Type
-The system SHALL allow counters to be marked as "Positive" or "Negative" habits.
+DEPRECATED: Habit tracking features (positive/negative types) have been removed in favor of a simpler counter model.
 
-#### Scenario: Setting habit type
-- **WHEN** editing a counter
-- **THEN** a user SHALL be able to toggle between positive and negative habit types
+## Requirements
+## REMOVED Requirements
+
+### Requirement: Habit Type
+**Reason**: User no longer wants to distinguish between positive and negative habits.
+**Migration**: Existing counters will no longer have this property. Any logic relying on it will be simplified to treat all counters uniformly.
 
 ### Requirement: Habit Progress Visualization
-The system SHALL visualize progress differently based on habit type and goals.
-
-#### Scenario: Positive habit progress
-- **WHEN** a positive habit counter's value increases towards its goal
-- **THEN** the progress bar SHALL fill with a success color (e.g., green)
-
+**Reason**: Simplification of progress visualization.
+**Migration**: All counters will use a single standard for goal visualization (e.g., green for met goals) regardless of their previous habit type.
