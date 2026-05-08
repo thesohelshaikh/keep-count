@@ -187,7 +187,7 @@ struct CounterRow: View {
                 .foregroundColor(isGoalMet ? .green : .primary)
 
                 if let goal = counter.goal {
-                    ProgressView(value: Double(counter.value), total: Double(goal))
+                    ProgressView(value: max(0, Double(counter.value)), total: Double(goal))
                         .tint(isGoalMet ? .green : Color(hex: counter.color))
                         .scaleEffect(x: 1, y: 0.5, anchor: .center)
                 }
