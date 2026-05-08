@@ -40,25 +40,30 @@ struct HistoryDetailView: View {
                         Text("No events yet")
                             .foregroundColor(.gray)
                     } else {
-                        ForEach(sortedHistory) { event in
+                        ForEach(counter.historyWithTotals, id: \.event.id) { entry in
                             HStack {
                                 VStack(alignment: .leading) {
-                                    Text(event.timestamp, style: .date)
-                                    Text(event.timestamp, style: .time)
+                                    Text(entry.event.timestamp, style: .date)
+                                    Text(entry.event.timestamp, style: .time)
                                         .font(.caption)
                                         .foregroundColor(.gray)
                                 }
                                 Spacer()
-                                Text(event.changeValue > 0 ? "+\(event.changeValue)" : "\(event.changeValue)")
-                                    .foregroundColor(event.changeValue > 0 ? .green : .red)
-                                    .bold()
+                                VStack(alignment: .trailing) {
+                                    Text(entry.event.changeValue > 0 ? "+\(entry.event.changeValue)" : "\(entry.event.changeValue)")
+                                        .foregroundColor(entry.event.changeValue > 0 ? .green : .red)
+                                        .bold()
+                                    Text("Total: \(entry.total)")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
                             }
                             .accessibilityElement(children: .combine)
-                            .accessibilityLabel("\(event.timestamp.formatted()), change of \(event.changeValue)")
+                            .accessibilityLabel("\(entry.event.timestamp.formatted()), change of \(entry.event.changeValue), total is now \(entry.total)")
                         }
                         .onDelete { offsets in
                             if let index = offsets.first {
-                                itemToDelete = sortedHistory[index]
+                                itemToDelete = counter.historyWithTotals[index].event
                                 showingDeleteConfirmation = true
                             }
                         }

@@ -24,3 +24,12 @@ The system SHALL display the exact duration since the last history event in the 
 - **WHEN** a user opens the `HistoryDetailView` for a counter
 - **THEN** they SHALL see a "Last Activity" or "Duration" field showing the precise time since the most recent event.
 
+### Requirement: Display Running Total in History
+The system SHALL display the cumulative total of the counter as it was immediately after each history event.
+
+#### Scenario: Viewing history with totals
+- **WHEN** a user views the history of a counter with an initial value of 0
+- **AND** there is an event "+5" followed by "-2"
+- **THEN** the first event SHALL show a total of "5"
+- **AND** the second event SHALL show a total of "3"
+

@@ -69,6 +69,19 @@ final class Counter {
         return "Just now"
     }
 
+    var historyWithTotals: [(event: HistoryEvent, total: Int)] {
+        let sorted = history.sorted(by: { $0.timestamp < $1.timestamp })
+        var runningTotal = initialValue
+        var results: [(event: HistoryEvent, total: Int)] = []
+        
+        for event in sorted {
+            runningTotal += event.changeValue
+            results.append((event: event, total: runningTotal))
+        }
+        
+        return results.reversed()
+    }
+
     func generateCSV() -> String {
         var csvString = "Timestamp,Change,Total Value\n"
         let sortedHistory = history.sorted(by: { $0.timestamp < $1.timestamp })
