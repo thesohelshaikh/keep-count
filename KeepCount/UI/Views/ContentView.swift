@@ -12,8 +12,6 @@ struct ContentView: View {
     @State private var counterToEdit: Counter? // State for editing counter
     @State private var selectedCounterForHistory: Counter? // State for showing history
     @State private var searchText = ""
-    @State private var counterToDelete: Counter?
-    @State private var showingCounterDeleteConfirmation = false
 
     var body: some View {
         NavigationStack {
@@ -44,12 +42,6 @@ struct ContentView: View {
                                 ForEach(uncategorized) { counter in
                                     counterRowView(for: counter)
                                 }
-                                .onDelete { indices in
-                                    if let index = indices.first {
-                                        counterToDelete = uncategorized[index]
-                                        showingCounterDeleteConfirmation = true
-                                    }
-                                }
                             }
                         }
 
@@ -60,12 +52,6 @@ struct ContentView: View {
                                     ForEach(countersInCategory) { counter in
                                         counterRowView(for: counter)
                                     }
-                                    .onDelete { indices in
-                                        if let index = indices.first {
-                                            counterToDelete = countersInCategory[index]
-                                            showingCounterDeleteConfirmation = true
-                                        }
-                                    }
                                 }
                             }
                         }
@@ -74,24 +60,6 @@ struct ContentView: View {
             }
             .navigationTitle("Keep Count")
             .searchable(text: $searchText, prompt: "Search counters")
-            .confirmationDialog("Are you sure you want to delete this counter?", isPresented: $showingCounterDeleteConfirmation, titleVisibility: .visible) {
-                Button("Delete", role: .destructive) {
-                    if let counter = counterToDelete {
-                        let category = counter.category
-                        modelContext.delete(counter)
-                        
-                        // Clean up empty category if needed
-                        if let category = category, category.counters.isEmpty {
-                            modelContext.delete(category)
-                        }
-                    }
-                }
-                Button("Cancel", role: .cancel) {}
-            } message: {
-                if let counter = counterToDelete {
-                    Text("This will permanently delete '\(counter.name)' and all its history.")
-                }
-            }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(action: { showingAddCounter = true }) {
@@ -135,13 +103,6 @@ struct ContentView: View {
                 Label("Archive", systemImage: "archivebox")
             }
             .tint(.orange)
-
-            Button(role: .destructive) {
-                counterToDelete = counter
-                showingCounterDeleteConfirmation = true
-            } label: {
-                Label("Delete", systemImage: "trash")
-            }
         }
     }
 

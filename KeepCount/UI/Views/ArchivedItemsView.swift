@@ -8,11 +8,6 @@ struct ArchivedItemsView: View {
     
     @Query(filter: #Predicate<Counter> { $0.isArchived == true }) private var archivedCounters: [Counter]
     @Query(filter: #Predicate<DateEvent> { $0.isArchived == true }) private var archivedEvents: [DateEvent]
-    
-    @State private var counterToDelete: Counter?
-    @State private var eventToDelete: DateEvent?
-    @State private var showingCounterDeleteConfirmation = false
-    @State private var showingEventDeleteConfirmation = false
 
     var body: some View {
         NavigationStack {
@@ -47,8 +42,13 @@ struct ArchivedItemsView: View {
                                 }
                                 .swipeActions(edge: .trailing) {
                                     Button(role: .destructive) {
-                                        counterToDelete = counter
-                                        showingCounterDeleteConfirmation = true
+                                        let category = counter.category
+                                        modelContext.delete(counter)
+                                        
+                                        // Clean up empty category if needed
+                                        if let category = category, category.counters.isEmpty {
+                                            modelContext.delete(category)
+                                        }
                                     } label: {
                                         Label("Delete", systemImage: "trash")
                                     }
@@ -80,8 +80,8 @@ struct ArchivedItemsView: View {
                                 }
                                 .swipeActions(edge: .trailing) {
                                     Button(role: .destructive) {
-                                        eventToDelete = event
-                                        showingEventDeleteConfirmation = true
+                                        NotificationManager.shared.cancelNotification(for: event)
+                                        modelContext.delete(event)
                                     } label: {
                                         Label("Delete", systemImage: "trash")
                                     }
@@ -98,26 +98,6 @@ struct ArchivedItemsView: View {
                         dismiss()
                     }
                 }
-            }
-            .confirmationDialog("Delete Counter?", isPresented: $showingCounterDeleteConfirmation, titleVisibility: .visible) {
-                Button("Delete", role: .destructive) {
-                    if let counter = counterToDelete {
-                        modelContext.delete(counter)
-                    }
-                }
-                Button("Cancel", role: .cancel) {}
-            } message: {
-                Text("This will permanently delete '\(counterToDelete?.name ?? "")' and all its history.")
-            }
-            .confirmationDialog("Delete Event?", isPresented: $showingEventDeleteConfirmation, titleVisibility: .visible) {
-                Button("Delete", role: .destructive) {
-                    if let event = eventToDelete {
-                        modelContext.delete(event)
-                    }
-                }
-                Button("Cancel", role: .cancel) {}
-            } message: {
-                Text("This will permanently delete '\(eventToDelete?.name ?? "")'.")
             }
         }
     }

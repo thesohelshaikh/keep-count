@@ -9,9 +9,6 @@ struct DateTrackingView: View {
     @State private var showingAddDateEventView = false
     @State private var showingEditDateEventView = false
     @State private var eventToEdit: DateEvent?
-    @State private var showingDeleteConfirmation = false
-    @State private var offsetsToDelete: IndexSet?
-    @State private var listToDelete: [DateEvent]?
 
     private var upcomingEvents: [DateEvent] {
         dateEvents.filter { $0.date >= Calendar.current.startOfDay(for: .now) }.reversed()
@@ -27,13 +24,11 @@ struct DateTrackingView: View {
                     ForEach(upcomingEvents) { event in
                         eventRow(for: event)
                     }
-                    .onDelete(perform: confirmDeleteUpcoming)
                 }
                 Section("Past") {
                     ForEach(pastEvents) { event in
                         eventRow(for: event)
                     }
-                    .onDelete(perform: confirmDeletePast)
                 }
             }
             .navigationTitle("Events")
@@ -52,19 +47,6 @@ struct DateTrackingView: View {
             .sheet(isPresented: $showingEditDateEventView) {
                 if let eventToEdit = eventToEdit {
                     EditDateEventView(event: eventToEdit)
-                }
-            }
-            .confirmationDialog(
-                "Are you sure you want to delete this event?",
-                isPresented: $showingDeleteConfirmation,
-                titleVisibility: .visible
-            ) {
-                Button("Delete", role: .destructive) {
-                    deleteItems()
-                }
-                Button("Cancel", role: .cancel) {
-                    offsetsToDelete = nil
-                    listToDelete = nil
                 }
             }
         }
@@ -91,30 +73,6 @@ struct DateTrackingView: View {
                 Label("Archive", systemImage: "archivebox")
             }
             .tint(.orange)
-        }
-    }
-
-    private func confirmDeleteUpcoming(offsets: IndexSet) {
-        self.offsetsToDelete = offsets
-        self.listToDelete = upcomingEvents
-        self.showingDeleteConfirmation = true
-    }
-
-    private func confirmDeletePast(offsets: IndexSet) {
-        self.offsetsToDelete = offsets
-        self.listToDelete = pastEvents
-        self.showingDeleteConfirmation = true
-    }
-
-    private func deleteItems() {
-        if let offsets = offsetsToDelete, let list = listToDelete {
-            withAnimation {
-                for index in offsets {
-                    let event = list[index]
-                    NotificationManager.shared.cancelNotification(for: event)
-                    modelContext.delete(event)
-                }
-            }
         }
     }
 }
