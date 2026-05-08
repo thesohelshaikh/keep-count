@@ -110,7 +110,9 @@ struct DateTrackingView: View {
         if let offsets = offsetsToDelete, let list = listToDelete {
             withAnimation {
                 for index in offsets {
-                    modelContext.delete(list[index])
+                    let event = list[index]
+                    NotificationManager.shared.cancelNotification(for: event)
+                    modelContext.delete(event)
                 }
             }
         }

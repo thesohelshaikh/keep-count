@@ -7,12 +7,14 @@ final class DateEvent {
     var name: String
     var date: Date
     var isArchived: Bool = false
+    var shouldNotify: Bool = false
 
-    init(name: String, date: Date, isArchived: Bool = false) {
+    init(name: String, date: Date, isArchived: Bool = false, shouldNotify: Bool = false) {
         self.id = UUID()
         self.name = name
         self.date = date
         self.isArchived = isArchived
+        self.shouldNotify = shouldNotify
     }
 
     var formattedTimeDifference: String {

@@ -7,12 +7,24 @@ struct AddDateEventView: View {
 
     @State private var name = ""
     @State private var date = Date()
+    @State private var shouldNotify = false
 
     var body: some View {
         NavigationStack {
             Form {
-                TextField("Event Name", text: $name)
-                DatePicker("Date", selection: $date, displayedComponents: .date)
+                Section {
+                    TextField("Event Name", text: $name)
+                    DatePicker("Date", selection: $date, displayedComponents: .date)
+                }
+                
+                Section {
+                    Toggle("Notify me on the day", isOn: $shouldNotify)
+                        .onChange(of: shouldNotify) { oldValue, newValue in
+                            if newValue {
+                                NotificationManager.shared.requestAuthorization()
+                            }
+                        }
+                }
             }
             .navigationTitle("Add Date Event")
             .toolbar {
@@ -33,7 +45,8 @@ struct AddDateEventView: View {
     }
 
     private func saveEvent() {
-        let newEvent = DateEvent(name: name, date: date)
+        let newEvent = DateEvent(name: name, date: date, shouldNotify: shouldNotify)
         modelContext.insert(newEvent)
+        NotificationManager.shared.scheduleNotification(for: newEvent)
     }
 }
