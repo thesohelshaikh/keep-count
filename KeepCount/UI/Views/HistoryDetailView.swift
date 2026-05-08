@@ -27,6 +27,7 @@ struct HistoryDetailView: View {
                         LabeledContent("Goal", value: "\(goal)")
                     }
                     LabeledContent("Created on", value: counter.createdAt.formatted(date: .long, time: .omitted))
+                    LabeledContent("Last Activity", value: counter.exactTimeSinceLastEvent)
                 }
 
                 Section(header: Text("History")) {

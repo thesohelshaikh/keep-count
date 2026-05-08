@@ -54,6 +54,21 @@ final class Counter {
         return formatter.localizedString(for: lastEvent.timestamp, relativeTo: Date())
     }
 
+    var exactTimeSinceLastEvent: String {
+        guard let lastEvent = history.sorted(by: { $0.timestamp > $1.timestamp }).first else {
+            return "Never"
+        }
+        let formatter = DateComponentsFormatter()
+        formatter.unitsStyle = .full
+        formatter.allowedUnits = [.year, .month, .weekOfMonth, .day, .hour, .minute]
+        formatter.maximumUnitCount = 3 // Show up to 3 units for detail but keep it readable
+        
+        if let durationString = formatter.string(from: lastEvent.timestamp, to: Date()) {
+            return "\(durationString) ago"
+        }
+        return "Just now"
+    }
+
     func generateCSV() -> String {
         var csvString = "Timestamp,Change,Total Value\n"
         let sortedHistory = history.sorted(by: { $0.timestamp < $1.timestamp })

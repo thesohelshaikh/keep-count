@@ -17,3 +17,10 @@ The system SHALL provide a view to see the chronological history of events for a
 - **WHEN** a user opens the details for a counter
 - **THEN** they SHALL see a list of all past increment/decrement events with their times
 
+### Requirement: Show Exact Duration in Details
+The system SHALL display the exact duration since the last history event in the counter's detail view.
+
+#### Scenario: Displaying duration in sheet
+- **WHEN** a user opens the `HistoryDetailView` for a counter
+- **THEN** they SHALL see a "Last Activity" or "Duration" field showing the precise time since the most recent event.
+
