@@ -1,6 +1,7 @@
 
 import SwiftUI
 import SwiftData
+import Charts
 
 struct HistoryDetailView: View {
     @Environment(\.modelContext) private var modelContext
@@ -12,14 +13,129 @@ struct HistoryDetailView: View {
     @State private var manualDate: Date = Date()
     @State private var itemToDelete: HistoryEvent?
     @State private var showingDeleteConfirmation = false
+    @State private var selectedRange: TimeRange = .week
+
+    enum TimeRange: String, CaseIterable, Identifiable {
+        case day = "D"
+        case week = "W"
+        case month = "M"
+        case sixMonths = "6M"
+        case year = "Y"
+        var id: String { self.rawValue }
+        
+        var calendarComponent: Calendar.Component {
+            switch self {
+            case .day: return .hour
+            case .week, .month: return .day
+            case .sixMonths: return .weekOfYear
+            case .year: return .month
+            }
+        }
+        
+        var rangeCount: Int {
+            switch self {
+            case .day: return 24
+            case .week: return 7
+            case .month: return 30
+            case .sixMonths: return 26
+            case .year: return 12
+            }
+        }
+    }
 
     var sortedHistory: [HistoryEvent] {
         counter.history.sorted(by: { $0.timestamp > $1.timestamp })
     }
 
+    private var bucketedData: [(date: Date, total: Int)] {
+        let calendar = Calendar.current
+        let now = Date()
+        var results: [(date: Date, total: Int)] = []
+        
+        // Create buckets
+        for i in 0..<selectedRange.rangeCount {
+            if let date = calendar.date(byAdding: selectedRange.calendarComponent, value: -i, to: now) {
+                // Normalize date to the start of the component
+                let components = calendar.dateComponents(selectedRange.calendarComponent == .weekOfYear ? [.yearForWeekOfYear, .weekOfYear] : (selectedRange.calendarComponent == .hour ? [.year, .month, .day, .hour] : (selectedRange.calendarComponent == .month ? [.year, .month] : [.year, .month, .day])), from: date)
+                if let bucketDate = calendar.date(from: components) {
+                    results.append((bucketDate, 0))
+                }
+            }
+        }
+        
+        results.reverse()
+        
+        // Fill buckets
+        for event in counter.history {
+            let components = calendar.dateComponents(selectedRange.calendarComponent == .weekOfYear ? [.yearForWeekOfYear, .weekOfYear] : (selectedRange.calendarComponent == .hour ? [.year, .month, .day, .hour] : (selectedRange.calendarComponent == .month ? [.year, .month] : [.year, .month, .day])), from: event.timestamp)
+            if let eventDate = calendar.date(from: components) {
+                if let index = results.firstIndex(where: { $0.date == eventDate }) {
+                    results[index].total += event.changeValue
+                }
+            }
+        }
+        
+        return results
+    }
+
     var body: some View {
         NavigationStack {
             List {
+                Section {
+                    VStack(spacing: 16) {
+                        Picker("Time Range", selection: $selectedRange) {
+                            ForEach(TimeRange.allCases) { range in
+                                Text(range.rawValue).tag(range)
+                            }
+                        }
+                        .pickerStyle(.segmented)
+
+                        Chart {
+                            ForEach(bucketedData, id: \.date) { item in
+                                BarMark(
+                                    x: .value("Date", item.date, unit: selectedRange.calendarComponent),
+                                    y: .value("Total", item.total)
+                                )
+                                .foregroundStyle(Color(hex: counter.color))
+                                .cornerRadius(4)
+                            }
+                        }
+                        .frame(height: 180)
+                        .chartXAxis {
+                            switch selectedRange {
+                            case .day:
+                                AxisMarks(values: .stride(by: .hour, count: 6)) { value in
+                                    AxisValueLabel(format: .dateTime.hour())
+                                }
+                            case .week:
+                                AxisMarks(values: .stride(by: .day, count: 1)) { value in
+                                    AxisValueLabel(format: .dateTime.weekday(.narrow))
+                                }
+                            case .month:
+                                AxisMarks(values: .stride(by: .day, count: 7)) { value in
+                                    AxisValueLabel(format: .dateTime.day())
+                                }
+                            case .sixMonths:
+                                AxisMarks(values: .stride(by: .month, count: 1)) { value in
+                                    AxisValueLabel(format: .dateTime.month(.abbreviated))
+                                }
+                            case .year:
+                                AxisMarks(values: .stride(by: .month, count: 1)) { value in
+                                    AxisValueLabel(format: .dateTime.month(.narrow))
+                                }
+                            }
+                        }
+                        .chartYAxis {
+                            AxisMarks(position: .leading)
+                        }
+                    }
+                    .padding(.vertical, 8)
+                    .accessibilityLabel("Counter activity chart")
+                    .accessibilityValue("Showing \(selectedRange.rawValue) activity for \(counter.name).")
+                }
+                .listRowBackground(Color.clear)
+                .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+
                 Section(header: Text("Details")) {
                     LabeledContent("Total Value", value: "\(counter.value)")
                     if let goal = counter.goal {
