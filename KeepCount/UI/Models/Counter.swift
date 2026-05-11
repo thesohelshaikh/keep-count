@@ -67,14 +67,29 @@ final class Counter {
         return "Just now"
     }
 
-    var historyWithTotals: [(event: HistoryEvent, total: Int)] {
+    var historyWithTotals: [(event: HistoryEvent, total: Int, interval: String?)] {
         let sorted = history.sorted(by: { $0.timestamp < $1.timestamp })
         var runningTotal = initialValue
-        var results: [(event: HistoryEvent, total: Int)] = []
+        var results: [(event: HistoryEvent, total: Int, interval: String?)] = []
         
-        for event in sorted {
+        let formatter = DateComponentsFormatter()
+        formatter.unitsStyle = .abbreviated
+        formatter.allowedUnits = [.year, .month, .weekOfMonth, .day, .hour, .minute, .second]
+        formatter.maximumUnitCount = 1
+        
+        for i in 0..<sorted.count {
+            let event = sorted[i]
             runningTotal += event.changeValue
-            results.append((event: event, total: runningTotal))
+            
+            var intervalString: String? = nil
+            if i > 0 {
+                let previousEvent = sorted[i-1]
+                if let duration = formatter.string(from: previousEvent.timestamp, to: event.timestamp) {
+                    intervalString = "+\(duration) later"
+                }
+            }
+            
+            results.append((event: event, total: runningTotal, interval: intervalString))
         }
         
         return results.reversed()

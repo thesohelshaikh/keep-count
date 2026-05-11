@@ -33,3 +33,16 @@ The system SHALL display the cumulative total of the counter as it was immediate
 - **THEN** the first event SHALL show a total of "5"
 - **AND** the second event SHALL show a total of "3"
 
+### Requirement: Display Time Since Previous Entry
+The system SHALL display the amount of time elapsed since the immediately preceding history event for each entry in the history list, except for the earliest event.
+
+#### Scenario: Displaying interval for subsequent events
+- **WHEN** a user views the history of a counter
+- **AND** there is an event at 10:00 AM and a subsequent event at 10:15 AM
+- **THEN** the 10:15 AM event SHALL display a label indicating "+15m later" (or similar relative format)
+
+#### Scenario: Displaying first event
+- **WHEN** a user views the history of a counter
+- **AND** they see the earliest recorded event
+- **THEN** it SHALL NOT display a time-since-previous label, as no preceding event exists
+

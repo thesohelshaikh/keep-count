@@ -43,9 +43,15 @@ struct HistoryDetailView: View {
                             HStack {
                                 VStack(alignment: .leading) {
                                     Text(entry.event.timestamp, style: .date)
-                                    Text(entry.event.timestamp, style: .time)
-                                        .font(.caption)
-                                        .foregroundColor(.gray)
+                                    HStack(spacing: 4) {
+                                        Text(entry.event.timestamp, style: .time)
+                                        if let interval = entry.interval {
+                                            Text("•")
+                                            Text(interval)
+                                        }
+                                    }
+                                    .font(.caption)
+                                    .foregroundColor(.gray)
                                 }
                                 Spacer()
                                 VStack(alignment: .trailing) {
